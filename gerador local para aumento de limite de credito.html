@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gerador de UPDATE PERSONALIZADO</title> //feito as pressas para atender demanda interna//
+</head>
+<body>
+  <h1>Gerador de UPDATE Para limite de crédito</h1>
+  <div>
+    <label for="parcInput">Informe os códigos dos parceiros "codparc" (separados por vírgula):</label>
+    <input type="text" id="parcInput" placeholder="Exemplo: 1,2,3">
+  </div>
+  <div>
+    <label for="valorInput">Informe os valores respectivos (separados por vírgula):</label> 
+//valores obtidos pela média de crédito dos clientes nos ultimos 6 meses//
+//SELECT CAB.CODPARC, AVG(CAB.VLRNOTA) AS MEDIA_GASTOS
+//FROM TGFCAB CAB
+//WHERE CAB.CODPARC NOT IN (6450)
+//  AND CAB.DTNEG >= SYSDATE - INTERVAL '6' MONTH
+//GROUP BY CAB.CODPARC
+//HAVING AVG(CAB.VLRNOTA) > (
+//    SELECT PAR.LIMCRED
+//    FROM TGFPAR PAR
+//    WHERE PAR.CODPARC = CAB.CODPARC)
+	
+    <input type="text" id="valorInput" placeholder="Exemplo: 100,200,300">
+  </div>
+  <button onclick="gerarUpdate()">Gerar QUERY</button>
+  <div id="resultado"></div>
+
+  <script>
+    function gerarTextoSQL(parc, valor) {
+      let textoGerado = `UPDATE TGFPAR
+SET LIMCRED = CASE CODPARC\n`;
+
+      for (let i = 0; i < parc.length; i++) {
+        textoGerado += `WHEN ${parc[i]} THEN ${valor[i]}\n`;
+      }
+
+      textoGerado += `ELSE LIMCRED
+END
+WHERE CODPARC IN (${parc.join(", ")})`;
+
+      return textoGerado;
+    }
+
+    function exibirResultado(texto) {
+      const resultadoDiv = document.getElementById("resultado");
+      resultadoDiv.innerHTML = "<pre>" + texto + "</pre>";
+    }
+
+    function gerarUpdate() {
+      const parcInput = document.getElementById("parcInput").value;
+      const valorInput = document.getElementById("valorInput").value;
+
+      // Convertendo as strings de entrada para vetores
+      const parc = parcInput.split(",").map(item => parseInt(item.trim()));
+      const valor = valorInput.split(",").map(item => parseInt(item.trim()));
+
+      const textoGerado = gerarTextoSQL(parc, valor);
+
+      // Fazendo a substituição dos valores no texto gerado
+      const newTextoGerado = textoGerado.replace(/parc/g, JSON.stringify(parc));
+
+      exibirResultado(newTextoGerado);
+
+      // Exportando o vetor parc (opcional)
+      console.log("parc:", parc);
+    }
+  </script>
+</body>
+</html>
