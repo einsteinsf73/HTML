@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ordenar Números e Verificar Duplicidades</title>
+</head>
+<body>
+    <h1>Números Ordenados e eventuais Duplicidades</h1>
+    <p>Insira os números separados por vírgulas:</p>
+    <input type="text" id="entradaNumeros" placeholder="Exemplo: 3, 1, 5, 2" onkeydown="verificarTecla(event)">
+    <button onclick="verificarEOrdenar()">Verificar e ordenar</button>
+
+    <p id="resultado"></p>
+
+    <script>
+        function verificarTecla(event) {
+            if (event.key === "Enter") {
+                verificarEOrdenar();
+                event.preventDefault();
+            }
+        }
+
+        function verificarEOrdenar() {
+            // Obter a entrada do usuário
+            var entradaNumeros = document.getElementById("entradaNumeros").value;
+
+            // Dividir a entrada em um array de números
+            var numeros = entradaNumeros.split(",").map(function(numero) {
+                var valorNumerico = parseFloat(numero.trim());
+                return isNaN(valorNumerico) ? null : valorNumerico;
+            }).filter(function(numero) {
+                return numero !== null;
+            });
+
+            if (numeros.length === 0) {
+                alert("Nenhum número válido foi inserido.");
+                return;
+            }
+
+            // Ordenar a lista em ordem crescente
+            var numerosOrdenados = numeros.slice().sort(function(a, b) {
+                return a - b;
+            });
+
+            // Encontrar duplicidades
+            var numerosUnicos = [];
+            var duplicidades = [];
+            var numerosVistos = {};
+
+            for (var i = 0; i < numerosOrdenados.length; i++) {
+                var numero = numerosOrdenados[i];
+
+                if (!numerosVistos[numero]) {
+                    numerosUnicos.push(numero);
+                    numerosVistos[numero] = true;
+                } else {
+                    duplicidades.push(numero);
+                }
+            }
+
+            // Exibir os numeros inseridos em ordem crescente
+            var resultadoElement = document.getElementById("resultado");
+            resultadoElement.innerHTML = "Números inseridos em ordem crescente:<br>" + numerosUnicos.join(", ") + "<br>";
+
+            if (duplicidades.length > 0) {
+                resultadoElement.innerHTML += "<br><br><br>Duplicidade(s) encontrada(s) na lista: " + duplicidades.join(", ");
+            } else {
+                resultadoElement.innerHTML += "<br><br>Não há duplicidades na lista.";
+            }
+        }
+    </script>
+</body>
+</html>
