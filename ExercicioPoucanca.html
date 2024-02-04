@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Minha Poupança</title>
+  </head>
+  <body>
+    <p id="título">
+      Minha Poupança R$ <br /><br />
+    </p>
+
+    <p id="saldo" style="background-color: #aaffff;">
+      Saldo: R$
+    </p>
+
+    <p id="acoes">
+      <input id="valor" /><br />
+      <input type="button" value="Depósito" onclick="poupanca.depositar();" />
+      <input type="button" value="Saque" onclick="poupanca.sacar();" /><br />
+      <input type="button" value="Extrato" onclick="poupanca.exibirExtrato();" />
+    </p>
+
+    <p id="extrato" style="background-color: #aaffff;">
+      Extrato
+    </p>
+
+    <script>
+      var saidasaldo = document.getElementById("saldo");
+      var saidExtrato = document.getElementById("extrato");
+      var valorHTML = document.getElementById("valor");
+
+      function dataCurta() {
+        var data = new Date();
+        var dd = data.getDate(); // dd para dia.
+        var mm = data.getMonth() + 1; // mm para mês.
+        var aaaa = data.getFullYear(); // aaaa para ano.
+        var h = data.getHours(); // h para horas.
+        var mi = data.getMinutes(); // mi para minutos.
+
+        if (dd.toString().length == 1) {
+          dd = "0" + dd;
+        }
+        if (mm.toString().length == 1) {
+          mm = "0" + mm;
+        }
+
+        if (h.toString().length == 1) {
+          h = "0" + h;
+        }
+        if (mi.toString().length == 1) {
+          mi = "0" + mi;
+        }
+
+        return dd + "/" + mm + "/" + aaaa + " - " + h + ":" + mi;
+      }
+
+      var poupanca = {
+        saldo: 0,
+        movimentacao: [],
+
+        depositar: function() {
+          var valor = Number(valorHTML.value);
+          this.saldo += valor;
+          saidasaldo.innerHTML = "Saldo: R$" + this.saldo.toFixed(2); 
+          this.movimentacao.push(dataCurta() + " Depósito de R$" + valor.toFixed(2)); 
+        },
+
+        sacar: function() {
+          if (this.saldo < valorHTML.value) {
+            alert("Saldo insuficiente");
+            return;
+          }
+          var valor = Number(valorHTML.value);
+          this.saldo -= valor;
+          saidasaldo.innerHTML = "Saldo: R$" + this.saldo.toFixed(2);
+          this.movimentacao.push(dataCurta() + " Saque de R$" + valor.toFixed(2));
+        },
+
+        exibirExtrato: function() {
+          var html = "<ul>";
+          for (var i = 0; i < this.movimentacao.length; i++) {
+            html += "<li>" + this.movimentacao[i] + "</li>";
+          }
+          html += "</ul>";
+          var saldoRestante = "Saldo em conta: R$" + this.saldo.toFixed(2);
+          html += "<p>" + saldoRestante + "</p>";
+          saidExtrato.innerHTML = html;
+        }
+      };
+    </script>
+  </body>
+</html>
